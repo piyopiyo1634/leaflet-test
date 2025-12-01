@@ -62,6 +62,43 @@
       .catch(function (err) {
         console.error('GeoJSON 読み込みエラー', err);
       });
+    // === 現在地を表示する処理 ===
+
+// ブラウザが位置情報に対応しているか確認
+if ("geolocation" in navigator) {
+
+  // 現在地が見つかったとき
+  function onLocationFound(e) {
+    const latlng = e.latlng;
+
+    // 現在地マーカー
+    L.marker(latlng, { title: "現在地" })
+      .addTo(map)
+      .bindPopup("いまここ")
+      .openPopup();
+
+    // 位置の誤差(精度)を円で表示（おまけ）
+    L.circle(latlng, { radius: e.accuracy }).addTo(map);
+  }
+
+  // 失敗したとき
+  function onLocationError(e) {
+    console.log("位置情報エラー:", e.message);
+    // 必要ならアラート出すなど
+    // alert("現在地を取得できませんでした: " + e.message);
+  }
+
+  map.on('locationfound', onLocationFound);
+  map.on('locationerror', onLocationError);
+
+  // ページを開いたら一回だけ現在地を取りに行く
+  map.locate({
+    setView: true,   // 現在地を地図の中心にする
+    maxZoom: 15      // 好きなズームに調整
+  });
+}
+
   </script>
 </body>
 </html>
+
